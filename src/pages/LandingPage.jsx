@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { Sparkles, Video, Subtitles, Share2, Zap, Check } from 'lucide-react';
+import AuthModal from '../components/AuthModal';
+import { Sparkles, Video, Subtitles, Share2, Zap, Check, Play } from 'lucide-react';
 
 export default function LandingPage() {
+    const [showAuth, setShowAuth] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
+    const navigate = useNavigate();
+
+    const openLogin = () => {
+        setAuthMode('login');
+        setShowAuth(true);
+    };
+
+    const openSignup = () => {
+        setAuthMode('signup');
+        setShowAuth(true);
+    };
+
+    const goToDashboard = () => {
+        navigate('/dashboard');
+    };
+
     const features = [
         {
             icon: <Sparkles className="w-8 h-8 text-purple-400" />,
@@ -33,7 +53,8 @@ export default function LandingPage() {
             period: '/month',
             features: ['5 videos/month', 'Basic AI detection', 'Standard subtitles', 'Watermark included'],
             cta: 'Start Free',
-            highlighted: false
+            highlighted: false,
+            action: goToDashboard
         },
         {
             name: 'Pro',
@@ -41,7 +62,8 @@ export default function LandingPage() {
             period: '/month',
             features: ['50 videos/month', 'Advanced AI detection', 'Custom subtitles', 'No watermark', 'Priority support'],
             cta: 'Go Pro',
-            highlighted: true
+            highlighted: true,
+            action: openSignup
         },
         {
             name: 'Business',
@@ -49,13 +71,15 @@ export default function LandingPage() {
             period: '/month',
             features: ['Unlimited videos', 'Premium AI features', 'Brand customization', 'API access', 'Dedicated support'],
             cta: 'Contact Us',
-            highlighted: false
+            highlighted: false,
+            action: () => window.location.href = 'mailto:contact@coredigital.com'
         }
     ];
 
     return (
         <div className="min-h-screen bg-gray-900 text-white">
-            <Navbar />
+            <Navbar onLoginClick={openLogin} />
+            <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} initialMode={authMode} />
 
             {/* Hero Section */}
             <section className="pt-32 pb-20 px-4">
@@ -76,10 +100,17 @@ export default function LandingPage() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:opacity-90 transition shadow-lg shadow-purple-500/25">
+                        <button
+                            onClick={goToDashboard}
+                            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:opacity-90 transition shadow-lg shadow-purple-500/25"
+                        >
                             Start Creating Free
                         </button>
-                        <button className="border border-gray-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-800 transition">
+                        <button
+                            onClick={() => alert('Demo video coming soon!')}
+                            className="border border-gray-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-800 transition flex items-center justify-center gap-2"
+                        >
+                            <Play className="w-5 h-5" />
                             Watch Demo
                         </button>
                     </div>
@@ -145,6 +176,7 @@ export default function LandingPage() {
                                     ))}
                                 </ul>
                                 <button
+                                    onClick={plan.action}
                                     className={`w-full py-3 rounded-full font-semibold transition ${plan.highlighted
                                             ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:opacity-90'
                                             : 'border border-gray-600 text-white hover:bg-gray-700'
@@ -162,14 +194,14 @@ export default function LandingPage() {
             <footer className="py-12 px-4 border-t border-gray-800">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center gap-2">
+                        <Link to="/" className="flex items-center gap-2">
                             <Zap className="w-6 h-6 text-purple-500" />
                             <span className="text-lg font-bold">ClipForge AI</span>
-                        </div>
+                        </Link>
                         <div className="flex gap-6 text-gray-400">
                             <a href="#" className="hover:text-white transition">Privacy</a>
                             <a href="#" className="hover:text-white transition">Terms</a>
-                            <a href="#" className="hover:text-white transition">Contact</a>
+                            <a href="mailto:contact@coredigital.com" className="hover:text-white transition">Contact</a>
                         </div>
                         <p className="text-gray-500">© 2026 Core Digital. All rights reserved.</p>
                     </div>
