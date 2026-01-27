@@ -1,13 +1,33 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import AuthModal from '../components/AuthModal';
+import { useAuth } from '../context/AuthContext';
 import { Sparkles, Video, Subtitles, Share2, Zap, Check, Play } from 'lucide-react';
 
 export default function LandingPage() {
     const [showAuth, setShowAuth] = useState(false);
     const [authMode, setAuthMode] = useState('login');
     const navigate = useNavigate();
+    const location = useLocation();
+    const { user } = useAuth();
+
+    // Check for password recovery state
+    useEffect(() => {
+        if (location.state?.showNewPassword) {
+            setAuthMode('newPassword');
+            setShowAuth(true);
+            // Clear the state
+            window.history.replaceState({}, document.title);
+        }
+    }, [location]);
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (user) {
+            navigate('/dashboard');
+        }
+    }, [user, navigate]);
 
     const openLogin = () => {
         setAuthMode('login');
@@ -20,7 +40,11 @@ export default function LandingPage() {
     };
 
     const goToDashboard = () => {
-        navigate('/dashboard');
+        if (user) {
+            navigate('/dashboard');
+        } else {
+            openSignup();
+        }
     };
 
     const features = [

@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Upload, Scissors, Download, Settings, LogOut, Zap, Plus, Video, Clock } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
     const [activeTab, setActiveTab] = useState('upload');
+    const { user, signOut } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await signOut();
+        navigate('/');
+    };
 
     const sidebarItems = [
         { id: 'upload', icon: <Upload className="w-5 h-5" />, label: 'Upload' },
@@ -28,6 +36,17 @@ export default function Dashboard() {
                     <span className="text-xl font-bold">ClipForge AI</span>
                 </Link>
 
+                {/* User info */}
+                {user && (
+                    <div className="p-4 border-b border-gray-700">
+                        <p className="text-sm text-gray-400">Logged in as:</p>
+                        <p className="text-white font-medium truncate">{user.email}</p>
+                        {user.user_metadata?.full_name && (
+                            <p className="text-purple-400 text-sm">{user.user_metadata.full_name}</p>
+                        )}
+                    </div>
+                )}
+
                 {/* Navigation */}
                 <nav className="flex-1 p-4">
                     <ul className="space-y-2">
@@ -50,13 +69,13 @@ export default function Dashboard() {
 
                 {/* Logout */}
                 <div className="p-4 border-t border-gray-700">
-                    <Link
-                        to="/"
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700 hover:text-white transition"
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700 hover:text-white transition"
                     >
                         <LogOut className="w-5 h-5" />
                         Logout
-                    </Link>
+                    </button>
                 </div>
             </aside>
 
@@ -132,15 +151,24 @@ export default function Dashboard() {
                                     <label className="block text-gray-400 mb-2">Email</label>
                                     <input
                                         type="email"
-                                        placeholder="your@email.com"
+                                        value={user?.email || ''}
+                                        disabled
+                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-gray-400 mb-2">Full Name</label>
+                                    <input
+                                        type="text"
+                                        defaultValue={user?.user_metadata?.full_name || ''}
                                         className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-gray-400 mb-2">Subscription</label>
                                     <div className="flex items-center gap-4">
-                                        <span className="bg-purple-600 px-3 py-1 rounded-full text-sm">Pro Plan</span>
-                                        <button className="text-purple-400 hover:text-purple-300">Change Plan</button>
+                                        <span className="bg-purple-600 px-3 py-1 rounded-full text-sm">Free Plan</span>
+                                        <button className="text-purple-400 hover:text-purple-300">Upgrade</button>
                                     </div>
                                 </div>
                                 <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">
