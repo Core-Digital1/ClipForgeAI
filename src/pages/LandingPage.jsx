@@ -14,11 +14,12 @@ export default function LandingPage() {
 
     // Check for password recovery state
     useEffect(() => {
-        if (location.state?.showNewPassword) {
+        // Check state from App.jsx OR direct hash check
+        if (location.state?.showNewPassword || (window.location.hash && window.location.hash.includes('type=recovery'))) {
             setAuthMode('newPassword');
             setShowAuth(true);
-            // Clear the state
-            window.history.replaceState({}, document.title);
+            // Clear the state and hash
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
     }, [location]);
 
@@ -177,8 +178,8 @@ export default function LandingPage() {
                             <div
                                 key={index}
                                 className={`rounded-2xl p-8 ${plan.highlighted
-                                        ? 'bg-gradient-to-b from-purple-600/20 to-blue-600/20 border-2 border-purple-500'
-                                        : 'bg-gray-800/50 border border-gray-700'
+                                    ? 'bg-gradient-to-b from-purple-600/20 to-blue-600/20 border-2 border-purple-500'
+                                    : 'bg-gray-800/50 border border-gray-700'
                                     }`}
                             >
                                 {plan.highlighted && (
@@ -202,8 +203,8 @@ export default function LandingPage() {
                                 <button
                                     onClick={plan.action}
                                     className={`w-full py-3 rounded-full font-semibold transition ${plan.highlighted
-                                            ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:opacity-90'
-                                            : 'border border-gray-600 text-white hover:bg-gray-700'
+                                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:opacity-90'
+                                        : 'border border-gray-600 text-white hover:bg-gray-700'
                                         }`}
                                 >
                                     {plan.cta}
