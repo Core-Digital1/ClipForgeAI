@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Upload, Scissors, Download, Settings, LogOut, Zap, Plus, Video, Clock } from 'lucide-react';
+import AuthModal from '../components/AuthModal';
 import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
     const [activeTab, setActiveTab] = useState('upload');
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState('login');
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
+
+    const openChangePassword = () => {
+        setAuthMode('newPassword');
+        setShowAuthModal(true);
+    };
 
     const handleLogout = async () => {
         await signOut();
@@ -55,8 +63,8 @@ export default function Dashboard() {
                                 <button
                                     onClick={() => setActiveTab(item.id)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${activeTab === item.id
-                                            ? 'bg-purple-600 text-white'
-                                            : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                                        ? 'bg-purple-600 text-white'
+                                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
                                         }`}
                                 >
                                     {item.icon}
@@ -165,6 +173,15 @@ export default function Dashboard() {
                                     />
                                 </div>
                                 <div>
+                                    <label className="block text-gray-400 mb-2">Password</label>
+                                    <button
+                                        onClick={openChangePassword}
+                                        className="text-purple-400 hover:text-purple-300 font-medium"
+                                    >
+                                        Change Password
+                                    </button>
+                                </div>
+                                <div>
                                     <label className="block text-gray-400 mb-2">Subscription</label>
                                     <div className="flex items-center gap-4">
                                         <span className="bg-purple-600 px-3 py-1 rounded-full text-sm">Free Plan</span>
@@ -179,6 +196,12 @@ export default function Dashboard() {
                     </div>
                 )}
             </main>
+
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                initialMode={authMode}
+            />
         </div>
     );
 }
